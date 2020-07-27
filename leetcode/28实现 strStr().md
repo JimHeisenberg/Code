@@ -86,21 +86,7 @@ int strStr(char *haystack, char *needle)
 执行用时：0 ms  
 内存消耗：5.8 MB  
 ``` c
-void get_nextval(char *str, int *next)
-{
-    // change next into nextval
-    int len = strlen(str);
-    int i = 0;
-    for (i = 1; i < len; i++)
-    {
-        if (str[i] == str[next[i]])
-        {
-            next[i] = next[next[i]];
-        }
-    }
-}
-
-int *get_next(char *str)
+int *get_nextval(char *str)
 {
     int len = strlen(str);
     int *next = malloc(len * sizeof(int));
@@ -112,6 +98,9 @@ int *get_next(char *str)
         // 即是 str[0 ~ i-1] == str[j-i ~ j-1]
         // 当 i == 0 时，也认为匹配
         next[i] = j;
+        // change next into nextval
+        if (str[i] == str[next[i]])
+            next[i] = next[next[i]];
         // 确保 str[i] 与 str[j] 匹配
         // 即下一轮的i和j满足条件
         while (j >= 0 && str[i] != str[j])
@@ -119,8 +108,6 @@ int *get_next(char *str)
             j = next[j];
         }
     }
-    // change next into nextval
-    get_nextval(str, next);
     return next;
 }
 
@@ -132,7 +119,7 @@ int strStr(char *haystack, char *needle)
     int haystack_size = strlen(haystack);
     int needle_size = strlen(needle);
     int i = 0, j = 0;
-    int *next = get_next(needle);
+    int *next = get_nextval(needle);
     while (i < haystack_size && j < needle_size)
     {
         // j为-1说明needle[0]和haystack[i]匹配不上
