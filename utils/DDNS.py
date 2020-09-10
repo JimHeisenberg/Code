@@ -90,6 +90,7 @@ class DDNS(TencentCloudAPI):
         schedule.every(5).minutes.do(task)
         while True:
             schedule.run_pending()
+            time.sleep(30)
 
 
 if __name__ == "__main__":
