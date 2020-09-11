@@ -1,7 +1,6 @@
 import socket
 import time
 import datetime
-import schedule
 from TencentCloudAPI import TencentCloudAPI
 
 
@@ -14,16 +13,18 @@ class DDNS(TencentCloudAPI):
         SecretKey: str, see also https://console.cloud.tencent.com/cam/capi  
         prefix: str, like www, rd  
         domain: str, like qq.com, jimheisenberg.xyz  
+        timeInterval: int or float, there will be timeInterval seconds between each request  
         address: str, 接口请求域名 like https://cns.api.qcloud.com/v2/index.php?  
     """
 
-    def __init__(self, SecretId, SecretKey, prefix, domain, address="cns.api.qcloud.com/v2/index.php"):
+    def __init__(self, SecretId, SecretKey, prefix, domain, timeInterval, address="cns.api.qcloud.com/v2/index.php"):
         """
         initialization
         """
         super().__init__(SecretId, SecretKey, address)
         self.prefix = prefix.lower()
         self.domain = domain.lower()
+        self.timeInterval = timeInterval
 
     def getHostIp(self):
         """
@@ -86,11 +87,13 @@ class DDNS(TencentCloudAPI):
         """
         autoUpdateRecord with schedule
         """
-        task = self.autoUpdateRecord
-        schedule.every(5).minutes.do(task)
         while True:
-            schedule.run_pending()
-            time.sleep(30)
+            try:
+                self.autoUpdateRecord()
+                time.sleep(self.timeInterval)
+            except Exception as e:
+                print(e)
+                time.sleep(self.timeInterval)
 
 
 if __name__ == "__main__":
@@ -98,6 +101,7 @@ if __name__ == "__main__":
     SecretKey = "********************"
     prefix = "rd"
     domain = "jimheisenberg.xyz"
-    ddns = DDNS(SecretId, SecretKey, prefix, domain)
+    timeInterval = 600
+    ddns = DDNS(SecretId, SecretKey, prefix, domain, timeInterval)
     print("start")
     ddns.schedAutoUpdateRecord()
