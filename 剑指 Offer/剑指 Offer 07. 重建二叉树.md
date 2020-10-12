@@ -67,3 +67,56 @@ class Solution {
     }
 }
 ```
+
+# Solution 2
+先序遍历的第一个节点，是二叉树的根节点，这个节点在中序遍历中可以把左右子树分开  
+加强了鲁棒性，处理了先序中序不匹配  
+利用哈希表对查找加速  
+``` java
+/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode(int x) { val = x; }
+ * }
+ */
+class Solution {
+
+    HashMap<Integer, Integer> indexMap;
+
+    public TreeNode buildTree(int[] preorder, int[] inorder) {
+        indexMap = new HashMap<>();
+        for (int i = 0; i < inorder.length; i++)
+            indexMap.put(inorder[i], i);
+        return recursivelyBuildTree(preorder, 0, preorder.length, inorder, 0, inorder.length);
+    }
+
+    private TreeNode recursivelyBuildTree(int[] preorder, int preorderStart, int preorderEnd, int[] inorder,
+            int inorderStart, int inOrderEnd) {
+        if (preorderStart >= preorderEnd)
+            return null;
+        int x = preorder[preorderStart];
+        int inorderEndLeft = indexOf(x, inorder, inorderStart, inOrderEnd);
+        // 先序中序不匹配
+        if (inorderEndLeft == -1)
+            return null;
+        int preorderEndLeft = inorderEndLeft - inorderStart + preorderStart + 1;
+        TreeNode node = new TreeNode(x);
+        node.left = recursivelyBuildTree(preorder, preorderStart + 1, preorderEndLeft, inorder, inorderStart,
+                inorderEndLeft);
+        node.right = recursivelyBuildTree(preorder, preorderEndLeft, preorderEnd, inorder, inorderEndLeft + 1,
+                inOrderEnd);
+        return node;
+    }
+
+    private int indexOf(int target, int[] list, int s, int e) {
+        Integer index = indexMap.get(target);
+        if (index == null || index < s || index >= e) {
+            return -1;
+        }
+        return index;
+    }
+}
+```
