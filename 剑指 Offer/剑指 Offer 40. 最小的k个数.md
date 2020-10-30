@@ -56,3 +56,10 @@ class Solution {
     }
 }
 ```
+
+# Solution 2
+基于快排思想，划分数组  
+see also [link](https://leetcode-cn.com/problems/zui-xiao-de-kge-shu-lcof/solution/zui-xiao-de-kge-shu-by-leetcode-solution/)  
+``` java
+TODO
+```
